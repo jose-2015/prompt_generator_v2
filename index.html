@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Generator 2026</title>
+    
+    <!-- Tailwind CSS (CDN para versión estática) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Configuración de Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #e5e5e5;
+        }
+        ::selection {
+            background-color: rgba(16, 185, 129, 0.3);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #262626;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #404040;
+        }
+        
+        /* Utilidades para ocultar elementos */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased selection:bg-emerald-500/30">
+
+    <!-- Header -->
+    <header class="border-b border-neutral-800 bg-neutral-900/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-emerald-500 rounded flex items-center justify-center text-neutral-900 font-bold">
+                    <i data-lucide="terminal" class="w-4 h-4"></i>
+                </div>
+                <h1 class="text-xl font-semibold tracking-tight">
+                    Prompt Generator <span class="text-emerald-500">2026</span>
+                </h1>
+            </div>
+            <div class="hidden sm:block text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+                Versión Estática (Sin Node.js)
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 min-h-[calc(100vh-73px)]">
+        
+        <!-- Left Panel: Controls -->
+        <div class="p-6 sm:p-8 border-r border-neutral-800 overflow-y-auto lg:max-h-[calc(100vh-73px)]">
+            <div class="space-y-10">
+                
+                <!-- Section: Role -->
+                <section>
+                    <h2 class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                        <i data-lucide="cpu" class="w-3.5 h-3.5"></i> Rol del Sistema
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        
+                        <!-- Parent Category -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label class="block text-[11px] text-neutral-500 uppercase font-medium">Categoría Padre</label>
+                                <div class="flex gap-1">
+                                    <button id="btnDelParent" onclick="deleteParentCategory()" class="hidden p-1 text-neutral-600 hover:text-red-400 transition-colors" title="Eliminar categoría">
+                                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                                    </button>
+                                    <button onclick="toggleAddParent()" class="p-1 text-neutral-600 hover:text-emerald-400 transition-colors" title="Agregar categoría">
+                                        <i id="iconAddParent" data-lucide="plus" class="w-3 h-3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="parentInputContainer" class="hidden flex gap-2">
+                                <input id="newParentLabel" onkeydown="if(event.key==='Enter') addParentCategory()" placeholder="Nueva categoría..." class="flex-1 bg-neutral-900 border border-emerald-500/30 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                                <button onclick="addParentCategory()" class="p-2 bg-emerald-500 text-neutral-950 rounded-lg hover:bg-emerald-400 transition-colors">
+                                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                            
+                            <select id="parentRole" onchange="handleParentChange()" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all appearance-none cursor-pointer">
+                                <!-- Opciones inyectadas por JS -->
+                            </select>
+                        </div>
+
+                        <!-- Child Speciality -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label class="block text-[11px] text-neutral-500 uppercase font-medium">Especialidad (Hijo)</label>
+                                <div class="flex gap-1">
+                                    <button id="btnDelChild" onclick="deleteChildSpeciality()" class="hidden p-1 text-neutral-600 hover:text-red-400 transition-colors" title="Eliminar especialidad">
+                                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                                    </button>
+                                    <button id="btnAddChild" onclick="toggleAddChild()" class="p-1 text-neutral-600 hover:text-emerald-400 transition-colors opacity-30" disabled title="Agregar especialidad">
+                                        <i id="iconAddChild" data-lucide="plus" class="w-3 h-3"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="childInputContainer" class="hidden flex gap-2">
+                                <input id="newChildLabel" onkeydown="if(event.key==='Enter') addChildSpeciality()" placeholder="Nueva especialidad..." class="flex-1 bg-neutral-900 border border-emerald-500/30 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                                <button onclick="addChildSpeciality()" class="p-2 bg-emerald-500 text-neutral-950 rounded-lg hover:bg-emerald-400 transition-colors">
+                                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                            
+                            <select id="childRole" onchange="handleChildChange()" disabled class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                <option value="">Seleccionar padre primero</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Tech Stack -->
+                <section>
+                    <h2 class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                        <i data-lucide="code-2" class="w-3.5 h-3.5"></i> Stack Tecnológico
+                    </h2>
+                    <div class="bg-neutral-900 border border-neutral-800 rounded-xl p-4 focus-within:ring-1 focus-within:ring-emerald-500/30 transition-all">
+                        <div id="techStackContainer" class="flex flex-wrap gap-2 mb-3 empty:hidden">
+                            <!-- Tags inyectados por JS -->
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="plus" class="w-3.5 h-3.5 text-neutral-600"></i>
+                            <input id="tagInput" type="text" onkeydown="handleAddTag(event)" placeholder="Escribe una tecnología y pulsa Enter..." class="w-full bg-transparent text-sm focus:outline-none placeholder-neutral-600">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Text Areas -->
+                <section class="space-y-8">
+                    
+                    <!-- Objective -->
+                    <div>
+                        <h2 class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                            <i data-lucide="terminal" class="w-3.5 h-3.5"></i> Objetivo de la Tarea
+                        </h2>
+                        <textarea id="objective" rows="3" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all resize-none placeholder:text-neutral-700" placeholder="¿Qué debe lograr la IA?"></textarea>
+                    </div>
+
+                    <!-- Tech Context -->
+                    <div>
+                        <h2 class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                            <i data-lucide="database" class="w-3.5 h-3.5"></i> Contexto Técnico
+                        </h2>
+                        <textarea id="techContext" rows="3" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all resize-none placeholder:text-neutral-700" placeholder="Detalles del entorno, versiones, arquitectura..."></textarea>
+                    </div>
+
+                    <!-- Constraints -->
+                    <div>
+                        <h2 class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                            <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> Restricciones y Reglas
+                        </h2>
+                        <textarea id="constraints" rows="3" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all resize-none placeholder:text-neutral-700" placeholder="Lo que NO debe hacer o reglas críticas..."></textarea>
+                    </div>
+
+                    <!-- Input Data -->
+                    <div>
+                        <h2 class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                            <i data-lucide="code-2" class="w-3.5 h-3.5"></i> Datos de Entrada / Código
+                        </h2>
+                        <textarea id="inputData" rows="4" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all resize-none placeholder:text-neutral-700" placeholder="Pega aquí código, logs o datos brutos..."></textarea>
+                    </div>
+
+                    <!-- Chain of Thought -->
+                    <div>
+                        <h2 class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                            <i data-lucide="brain" class="w-3.5 h-3.5"></i> Cadena de Pensamiento
+                        </h2>
+                        <textarea id="chainOfThought" rows="3" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all resize-none placeholder:text-neutral-700" placeholder="Instrucciones paso a paso de cómo debe razonar el modelo (ej. Piensa paso a paso...)"></textarea>
+                    </div>
+
+                    <!-- Output Schema -->
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                                <i data-lucide="cloud" class="w-3.5 h-3.5"></i> Esquema de Salida
+                            </h2>
+                            <div class="flex gap-1">
+                                <button id="btnDelSchema" onclick="deleteSchema()" class="hidden p-1 text-neutral-600 hover:text-red-400 transition-colors" title="Eliminar esquema">
+                                    <i data-lucide="trash-2" class="w-3 h-3"></i>
+                                </button>
+                                <button onclick="toggleAddSchema()" class="p-1 text-neutral-600 hover:text-emerald-400 transition-colors" title="Agregar esquema">
+                                    <i id="iconAddSchema" data-lucide="plus" class="w-3 h-3"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="schemaInputContainer" class="hidden flex gap-2 mb-2">
+                            <input id="newSchemaLabel" onkeydown="if(event.key==='Enter') addSchema()" placeholder="Nuevo esquema..." class="flex-1 bg-neutral-900 border border-emerald-500/30 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                            <button onclick="addSchema()" class="p-2 bg-emerald-500 text-neutral-950 rounded-lg hover:bg-emerald-400 transition-colors">
+                                <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                        
+                        <select id="schemaSelect" onchange="handleSchemaChange()" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all appearance-none cursor-pointer mb-2">
+                            <!-- Opciones inyectadas por JS -->
+                        </select>
+
+                        <textarea id="outputSchema" rows="2" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all resize-none placeholder:text-neutral-700" placeholder="Formato esperado (o selecciona uno arriba)..."></textarea>
+                    </div>
+
+                    <!-- Examples -->
+                    <div>
+                        <h2 class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                            <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Ejemplos
+                        </h2>
+                        <textarea id="examples" rows="4" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all resize-none placeholder:text-neutral-700" placeholder="Proporciona ejemplos de entrada y salida esperada..."></textarea>
+                    </div>
+
+                </section>
+            </div>
+        </div>
+
+        <!-- Right Panel: Preview -->
+        <div class="bg-neutral-950/50 flex flex-col lg:max-h-[calc(100vh-73px)] border-t lg:border-t-0 border-neutral-800">
+            <div class="px-6 py-3 border-b border-neutral-800 flex justify-between items-center bg-neutral-900/30">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <span class="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">PREVIEW_OUTPUT.xml</span>
+                </div>
+                <button id="copyBtn" onclick="handleCopy()" class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all active:scale-95 bg-emerald-500 hover:bg-emerald-600 text-neutral-950">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i> COPIAR PROMPT
+                </button>
+            </div>
+            <div class="flex-1 p-6 overflow-y-auto bg-[#0a0a0a]">
+                <pre id="preview" class="font-mono text-sm text-emerald-400/80 leading-relaxed whitespace-pre-wrap break-all"></pre>
+            </div>
+        </div>
+    </main>
+
+    <!-- Lógica de la Aplicación -->
+    <script>
+        // --- Datos Iniciales ---
+        const INITIAL_ROLES_DATA = {
+            dev: {
+                label: "Desarrollo de Software",
+                default: "Ingeniero de Software Senior",
+                children: {
+                    senior_dev: { label: "Desarrollador de Software Senior (10+ años)", prompt: "Desarrollador de Software Senior con más de 10 años de experiencia. Tu enfoque principal es la creación de arquitecturas de software escalables, mantenibles y seguras. Eres un purista de las buenas prácticas (SOLID, DRY, Clean Code, Patrones de Diseño) y dominas estrategias de testing y CI/CD. Al responder o generar código, no te limites a que 'funcione'; debes explicar por qué tomaste ciertas decisiones técnicas, evaluar los pros y contras de tu enfoque frente a otras alternativas, considerar el rendimiento (Big O) y entregar código robusto, comentado y listo para producción." },
+                    frontend: { label: "Arquitecto Frontend (React/Vue)", prompt: "Arquitecto Frontend (React/Vue)" },
+                    backend: { label: "Ingeniero Backend Senior (Node/Go/Python)", prompt: "Ingeniero Backend Senior (Node/Go/Python)" },
+                    fullstack: { label: "Desarrollador Fullstack Senior", prompt: "Desarrollador Fullstack Senior" },
+                    mobile: { label: "Especialista en Desarrollo Mobile (Swift/Kotlin)", prompt: "Especialista en Desarrollo Mobile (Swift/Kotlin)" },
+                    ai_eng: { label: "Ingeniero de IA y LLMs", prompt: "Ingeniero de IA y LLMs" }
+                }
+            },
+            data: {
+                label: "Datos e IA",
+                default: "Especialista en Datos e Inteligencia Artificial",
+                children: {
+                    senior_data_eng: { label: "Ingeniero de Datos Senior (Data Engineer)", prompt: "Data Engineer Senior. Eres experto en el diseño, construcción y optimización de arquitecturas de datos escalables (Data Lakes, Data Warehouses, Lakehouses). Tienes un conocimiento profundo en creación de pipelines ETL/ELT eficientes, procesamiento de datos en batch y streaming (ej. Apache Spark, Kafka), y modelado dimensional. Al resolver mis problemas, prioriza la calidad del dato, la gobernanza, la optimización de costos en la nube y la resiliencia del sistema. Si propones una arquitectura, descríbela paso a paso y justifica la elección de las tecnologías." },
+                    senior_data_analyst: { label: "Analista de Datos Senior (Data Analyst)", prompt: "Analista de Datos Senior. Tu superpoder es traducir datos complejos en 'insights' accionables y estrategias de negocio. Eres un maestro en SQL avanzado, estadística descriptiva y visualización de datos (Power BI, Tableau). Al responder, adopta un enfoque orientado al impacto comercial: estructura tu respuesta destacando el contexto, el análisis, los KPIs relevantes y, lo más importante, las recomendaciones de negocio (Data Storytelling). No me des solo números, dime qué significan para la empresa y qué decisiones deberíamos tomar basándonos en ellos." },
+                    senior_data_scientist: { label: "Científico de Datos Senior (Data Scientist)", prompt: "Científico de Datos Senior. Tienes un rigor matemático y estadístico impecable, y eres experto en Machine Learning, Deep Learning y NLP. No solo sabes crear modelos, sino que entiendes cómo llevarlos a producción (MLOps) y medir su impacto real. Cuando te pida crear o analizar un modelo, aborda el problema de manera sistemática: Análisis Exploratorio (EDA), Ingeniería de Características (Feature Engineering), selección del algoritmo, ajuste de hiperparámetros y métricas de evaluación adecuadas (precision, recall, AUC, RMSE, etc.). Sé crítico con el sesgo de los datos (bias) y el sobreajuste (overfitting)." },
+                    scientist: { label: "Científico de Datos Estándar", prompt: "Científico de Datos" },
+                    engineer: { label: "Data Engineer Estándar", prompt: "Data Engineer" },
+                    ml: { label: "Ingeniero de Machine Learning", prompt: "Ingeniero de Machine Learning" },
+                    analyst: { label: "Analista de Datos Estándar", prompt: "Analista de Datos" }
+                }
+            },
+            teams: {
+                label: "Equipos Multidisciplinares (Híbridos)",
+                default: "Equipo de Expertos Tecnológicos",
+                children: {
+                    data_roundtable: { label: "Mesa Redonda: Equipo de Datos de Alto Rendimiento", prompt: "equipo de datos de alto rendimiento compuesto por un Senior Software Developer, un Senior Data Engineer, un Senior Data Analyst y un Senior Data Scientist. Te presentaré un problema de negocio. Quiero que me des una solución estructurada en 4 partes, donde cada especialista aporte su perspectiva:\n1. Data Engineer: Cómo extraeremos, almacenaremos y procesaremos los datos.\n2. Data Scientist: Qué modelos predictivos o algoritmos aplicaremos y cómo los entrenaremos.\n3. Software Developer: Cómo encapsularemos esto en una API o aplicación escalable y segura.\n4. Data Analyst: Qué métricas (KPIs) mediremos en producción para asegurar que esto aporta valor al negocio y cómo se visualizarán." }
+                }
+            },
+            writing: {
+                label: "Escritura y Creatividad",
+                default: "Escritor y Editor Profesional",
+                children: {
+                    novelist: { label: "Novelista y Narrador", prompt: "Novelista y Narrador" },
+                    copywriter: { label: "Copywriter Publicitario", prompt: "Copywriter Publicitario" },
+                    screenwriter: { label: "Guionista de Cine y TV", prompt: "Guionista de Cine y TV" },
+                    poet: { label: "Poeta y Escritor Creativo", prompt: "Poeta y Escritor Creativo" },
+                    journalist: { label: "Periodista de Investigación", prompt: "Periodista de Investigación" }
+                }
+            },
+            business: {
+                label: "Negocios y Estrategia",
+                default: "Consultor de Estrategia Empresarial",
+                children: {
+                    marketing: { label: "Experto en Marketing Digital", prompt: "Experto en Marketing Digital" },
+                    finance: { label: "Analista Financiero", prompt: "Analista Financiero" },
+                    project_manager: { label: "Project Manager (PMP)", prompt: "Project Manager (PMP)" },
+                    entrepreneur: { label: "Asesor de Emprendimiento", prompt: "Asesor de Emprendimiento" }
+                }
+            },
+            legal: {
+                label: "Legal y Cumplimiento",
+                default: "Consultor Legal",
+                children: {
+                    lawyer: { label: "Abogado Corporativo", prompt: "Abogado Corporativo" },
+                    privacy: { label: "Especialista en Privacidad y RGPD", prompt: "Especialista en Privacidad y RGPD" },
+                    auditor: { label: "Auditor de Cumplimiento", prompt: "Auditor de Cumplimiento" }
+                }
+            },
+            edu: {
+                label: "Educación y Tutoría",
+                default: "Educador y Mentor",
+                children: {
+                    languages: { label: "Profesor de Idiomas", prompt: "Profesor de Idiomas" },
+                    coding_mentor: { label: "Mentor de Programación", prompt: "Mentor de Programación" },
+                    academic_tutor: { label: "Tutor Académico", prompt: "Tutor Académico" }
+                }
+            },
+            translation: {
+                label: "Traducción y Localización",
+                default: "Traductor Profesional",
+                children: {
+                    technical: { label: "Traductor Técnico", prompt: "Traductor Técnico" },
+                    localization: { label: "Especialista en Localización de Software", prompt: "Especialista en Localización de Software" },
+                    literary: { label: "Traductor Literario", prompt: "Traductor Literario" }
+                }
+            },
+            design: {
+                label: "Diseño y Multimedia",
+                default: "Diseñador Creativo",
+                children: {
+                    ux_ui: { label: "Diseñador UX/UI", prompt: "Diseñador UX/UI" },
+                    video_editor: { label: "Editor de Video Profesional", prompt: "Editor de Video Profesional" },
+                    illustrator: { label: "Ilustrador Digital", prompt: "Ilustrador Digital" }
+                }
+            }
+        };
+
+        const INITIAL_SCHEMAS = [
+            "JSON", "Markdown", "HTML", "CSV", "Código Fuente", 
+            "Tabla", "Lista de viñetas", "Texto Plano", "Mermaid Diagram", "SQL Query"
+        ];
+
+        // --- Estado de la Aplicación ---
+        let rolesData = JSON.parse(JSON.stringify(INITIAL_ROLES_DATA));
+        let parentRole = '';
+        let childRole = '';
+        let techStack = [];
+        let schemas = [...INITIAL_SCHEMAS];
+        
+        // --- Referencias DOM ---
+        const els = {
+            parentRole: document.getElementById('parentRole'),
+            childRole: document.getElementById('childRole'),
+            techStackContainer: document.getElementById('techStackContainer'),
+            tagInput: document.getElementById('tagInput'),
+            objective: document.getElementById('objective'),
+            techContext: document.getElementById('techContext'),
+            constraints: document.getElementById('constraints'),
+            inputData: document.getElementById('inputData'),
+            chainOfThought: document.getElementById('chainOfThought'),
+            schemaSelect: document.getElementById('schemaSelect'),
+            outputSchema: document.getElementById('outputSchema'),
+            examples: document.getElementById('examples'),
+            preview: document.getElementById('preview'),
+            
+            // Botones y contenedores
+            btnDelParent: document.getElementById('btnDelParent'),
+            btnAddChild: document.getElementById('btnAddChild'),
+            btnDelChild: document.getElementById('btnDelChild'),
+            btnDelSchema: document.getElementById('btnDelSchema'),
+            
+            parentInputContainer: document.getElementById('parentInputContainer'),
+            childInputContainer: document.getElementById('childInputContainer'),
+            schemaInputContainer: document.getElementById('schemaInputContainer'),
+            
+            iconAddParent: document.getElementById('iconAddParent'),
+            iconAddChild: document.getElementById('iconAddChild'),
+            iconAddSchema: document.getElementById('iconAddSchema'),
+            
+            newParentLabel: document.getElementById('newParentLabel'),
+            newChildLabel: document.getElementById('newChildLabel'),
+            newSchemaLabel: document.getElementById('newSchemaLabel')
+        };
+
+        // --- Inicialización ---
+        function init() {
+            renderParentRoles();
+            renderSchemas();
+            attachListeners();
+            updateXML();
+            lucide.createIcons();
+        }
+
+        function attachListeners() {
+            const textAreas = ['objective', 'techContext', 'constraints', 'inputData', 'chainOfThought', 'outputSchema', 'examples'];
+            textAreas.forEach(id => {
+                els[id].addEventListener('input', updateXML);
+            });
+        }
+
+        // --- Renderizado de UI ---
+        function renderParentRoles() {
+            els.parentRole.innerHTML = '<option value="">Seleccionar...</option>';
+            for (const [key, data] of Object.entries(rolesData)) {
+                els.parentRole.innerHTML += `<option value="${key}">${data.label}</option>`;
+            }
+            els.parentRole.value = parentRole;
+            renderChildRoles();
+        }
+
+        function renderChildRoles() {
+            els.childRole.innerHTML = parentRole ? '<option value="">Seleccionar...</option>' : '<option value="">Seleccionar padre primero</option>';
+            els.childRole.disabled = !parentRole;
+            
+            if (parentRole && rolesData[parentRole]) {
+                for (const [key, child] of Object.entries(rolesData[parentRole].children)) {
+                    els.childRole.innerHTML += `<option value="${key}">${child.label}</option>`;
+                }
+                els.btnAddChild.disabled = false;
+                els.btnAddChild.classList.remove('opacity-30');
+                els.btnDelParent.classList.remove('hidden');
+            } else {
+                els.btnAddChild.disabled = true;
+                els.btnAddChild.classList.add('opacity-30');
+                els.btnDelParent.classList.add('hidden');
+            }
+            
+            els.childRole.value = childRole;
+            
+            if (childRole) {
+                els.btnDelChild.classList.remove('hidden');
+            } else {
+                els.btnDelChild.classList.add('hidden');
+            }
+            
+            updateXML();
+        }
+
+        function renderTechStack() {
+            els.techStackContainer.innerHTML = '';
+            techStack.forEach(tag => {
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-2 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-md group transition-all";
+                div.innerHTML = `
+                    <span>${tag}</span>
+                    <button onclick="removeTag('${tag}')" class="text-emerald-500/50 hover:text-emerald-400 transition-colors">
+                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                    </button>
+                `;
+                els.techStackContainer.appendChild(div);
+            });
+            lucide.createIcons();
+            updateXML();
+        }
+
+        function renderSchemas() {
+            els.schemaSelect.innerHTML = '<option value="">Seleccionar formato común...</option>';
+            schemas.forEach(s => {
+                els.schemaSelect.innerHTML += `<option value="${s}">${s}</option>`;
+            });
+            
+            const currentSchema = els.outputSchema.value;
+            if (schemas.includes(currentSchema)) {
+                els.schemaSelect.value = currentSchema;
+                els.btnDelSchema.classList.remove('hidden');
+            } else {
+                els.schemaSelect.value = '';
+                els.btnDelSchema.classList.add('hidden');
+            }
+        }
+
+        // --- Manejadores de Eventos ---
+        function handleParentChange() {
+            parentRole = els.parentRole.value;
+            childRole = '';
+            renderChildRoles();
+        }
+
+        function handleChildChange() {
+            childRole = els.childRole.value;
+            if (childRole) {
+                els.btnDelChild.classList.remove('hidden');
+            } else {
+                els.btnDelChild.classList.add('hidden');
+            }
+            updateXML();
+        }
+
+        function handleSchemaChange() {
+            const val = els.schemaSelect.value;
+            els.outputSchema.value = val;
+            if (val) {
+                els.btnDelSchema.classList.remove('hidden');
+            } else {
+                els.btnDelSchema.classList.add('hidden');
+            }
+            updateXML();
+        }
+
+        function handleAddTag(e) {
+            if (e.key === 'Enter' && els.tagInput.value.trim()) {
+                const tag = els.tagInput.value.trim();
+                if (!techStack.includes(tag)) {
+                    techStack.push(tag);
+                    renderTechStack();
+                }
+                els.tagInput.value = '';
+            }
+        }
+
+        function removeTag(tag) {
+            techStack = techStack.filter(t => t !== tag);
+            renderTechStack();
+        }
+
+        // --- Lógica de Agregar/Eliminar Dinámico ---
+        
+        // Parent
+        function toggleAddParent() {
+            const isHidden = els.parentInputContainer.classList.contains('hidden');
+            if (isHidden) {
+                els.parentInputContainer.classList.remove('hidden');
+                els.parentRole.classList.add('hidden');
+                els.iconAddParent.setAttribute('data-lucide', 'x');
+                els.newParentLabel.focus();
+            } else {
+                els.parentInputContainer.classList.add('hidden');
+                els.parentRole.classList.remove('hidden');
+                els.iconAddParent.setAttribute('data-lucide', 'plus');
+            }
+            lucide.createIcons();
+        }
+
+        function addParentCategory() {
+            const val = els.newParentLabel.value.trim();
+            if (!val) return;
+            const id = val.toLowerCase().replace(/\s+/g, '_');
+            rolesData[id] = { label: val, default: val, children: {} };
+            parentRole = id;
+            childRole = '';
+            els.newParentLabel.value = '';
+            toggleAddParent();
+            renderParentRoles();
+        }
+
+        function deleteParentCategory() {
+            if (!parentRole) return;
+            delete rolesData[parentRole];
+            parentRole = '';
+            childRole = '';
+            renderParentRoles();
+        }
+
+        // Child
+        function toggleAddChild() {
+            if (!parentRole) return;
+            const isHidden = els.childInputContainer.classList.contains('hidden');
+            if (isHidden) {
+                els.childInputContainer.classList.remove('hidden');
+                els.childRole.classList.add('hidden');
+                els.iconAddChild.setAttribute('data-lucide', 'x');
+                els.newChildLabel.focus();
+            } else {
+                els.childInputContainer.classList.add('hidden');
+                els.childRole.classList.remove('hidden');
+                els.iconAddChild.setAttribute('data-lucide', 'plus');
+            }
+            lucide.createIcons();
+        }
+
+        function addChildSpeciality() {
+            const val = els.newChildLabel.value.trim();
+            if (!val || !parentRole) return;
+            const id = val.toLowerCase().replace(/\s+/g, '_');
+            rolesData[parentRole].children[id] = { label: val, prompt: val };
+            childRole = id;
+            els.newChildLabel.value = '';
+            toggleAddChild();
+            renderChildRoles();
+        }
+
+        function deleteChildSpeciality() {
+            if (!parentRole || !childRole) return;
+            delete rolesData[parentRole].children[childRole];
+            childRole = '';
+            renderChildRoles();
+        }
+
+        // Schema
+        function toggleAddSchema() {
+            const isHidden = els.schemaInputContainer.classList.contains('hidden');
+            if (isHidden) {
+                els.schemaInputContainer.classList.remove('hidden');
+                els.schemaSelect.classList.add('hidden');
+                els.iconAddSchema.setAttribute('data-lucide', 'x');
+                els.newSchemaLabel.focus();
+            } else {
+                els.schemaInputContainer.classList.add('hidden');
+                els.schemaSelect.classList.remove('hidden');
+                els.iconAddSchema.setAttribute('data-lucide', 'plus');
+            }
+            lucide.createIcons();
+        }
+
+        function addSchema() {
+            const val = els.newSchemaLabel.value.trim();
+            if (!val) return;
+            if (!schemas.includes(val)) {
+                schemas.push(val);
+            }
+            els.outputSchema.value = val;
+            els.newSchemaLabel.value = '';
+            toggleAddSchema();
+            renderSchemas();
+            updateXML();
+        }
+
+        function deleteSchema() {
+            const val = els.outputSchema.value;
+            schemas = schemas.filter(s => s !== val);
+            els.outputSchema.value = '';
+            renderSchemas();
+            updateXML();
+        }
+
+        // --- Generación XML ---
+        function wrapTag(tag, content) {
+            if (!content || content.trim() === '') return '';
+            return `<${tag}>\n${content.trim()}\n</${tag}>\n\n`;
+        }
+
+        function formatList(list) {
+            if (list.length === 0) return '';
+            if (list.length === 1) return list[0];
+            const items = [...list];
+            const last = items.pop();
+            return items.join(', ') + ' y ' + last;
+        }
+
+        function updateXML() {
+            let xml = '<prompt_framework>\n\n';
+
+            // System Role Logic
+            let roleContent = '';
+            if (parentRole && rolesData[parentRole]) {
+                const parent = rolesData[parentRole];
+                const rolePrompt = childRole && parent.children[childRole] ? parent.children[childRole].prompt : parent.default;
+                roleContent = `Asume el rol de ${rolePrompt}.`;
+            }
+            xml += wrapTag('system_role', roleContent);
+
+            // Tech Stack
+            xml += wrapTag('tech_stack', formatList(techStack));
+
+            // Objective
+            const obj = els.objective.value;
+            if (obj) {
+                xml += `<task_definition>\n${obj.trim()}\n</task_definition>\n\n`;
+            }
+
+            // Other fields
+            xml += wrapTag('technical_context', els.techContext.value);
+            xml += wrapTag('input_data', els.inputData.value);
+            xml += wrapTag('constraints', els.constraints.value);
+            xml += wrapTag('chain_of_thought', els.chainOfThought.value);
+            xml += wrapTag('output_schema', els.outputSchema.value);
+            xml += wrapTag('examples', els.examples.value);
+
+            xml += '</prompt_framework>';
+            
+            // Limpiar saltos de línea excesivos
+            els.preview.textContent = xml.replace(/\n{3,}/g, '\n\n').trim();
+        }
+
+        // --- Copiar al Portapapeles ---
+        async function handleCopy() {
+            const text = els.preview.textContent;
+            try {
+                await navigator.clipboard.writeText(text);
+                const btn = document.getElementById('copyBtn');
+                
+                btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> COPIADO`;
+                btn.classList.remove('bg-emerald-500', 'hover:bg-emerald-600', 'text-neutral-950');
+                btn.classList.add('bg-blue-500', 'hover:bg-blue-600', 'text-white');
+                lucide.createIcons();
+                
+                setTimeout(() => {
+                    btn.innerHTML = `<i data-lucide="copy" class="w-3.5 h-3.5"></i> COPIAR PROMPT`;
+                    btn.classList.remove('bg-blue-500', 'hover:bg-blue-600', 'text-white');
+                    btn.classList.add('bg-emerald-500', 'hover:bg-emerald-600', 'text-neutral-950');
+                    lucide.createIcons();
+                }, 2000);
+            } catch (err) {
+                console.error('Error al copiar:', err);
+                alert('No se pudo copiar al portapapeles.');
+            }
+        }
+
+        // Iniciar la app
+        document.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</body>
+</html>
