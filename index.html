@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prompt Generator 2026 v3</title>
-    
+    <title>Prompt Generator 2026</title>
+   
     <!-- Tailwind CSS (CDN para versión estática) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+   
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+   
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+   
     <!-- Configuración de Tailwind -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans:['Inter', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
                     }
                 }
@@ -53,7 +53,7 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #404040;
         }
-        
+       
         /* Utilidades para ocultar elementos */
         .hidden { display: none !important; }
     </style>
@@ -78,18 +78,18 @@
     </header>
 
     <main class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 min-h-[calc(100vh-73px)]">
-        
+       
         <!-- Left Panel: Controls -->
         <div class="p-6 sm:p-8 border-r border-neutral-800 overflow-y-auto lg:max-h-[calc(100vh-73px)]">
             <div class="space-y-10">
-                
+               
                 <!-- Section: Role -->
                 <section>
                     <h2 class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
                         <i data-lucide="cpu" class="w-3.5 h-3.5"></i> Rol del Sistema
                     </h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        
+                       
                         <!-- Parent Category -->
                         <div class="space-y-2">
                             <div class="flex justify-between items-center">
@@ -98,22 +98,22 @@
                                     <button id="btnDelParent" onclick="deleteParentCategory()" class="hidden p-1 text-neutral-600 hover:text-red-400 transition-colors" title="Eliminar categoría">
                                         <i data-lucide="trash-2" class="w-3 h-3"></i>
                                     </button>
-                                    <button onclick="toggleAddParent()" class="p-1 text-neutral-600 hover:text-emerald-400 transition-colors" title="Agregar categoría">
+                                    <button onclick="toggleAddParent()" class="p-1 text-neutral-600 hover:text-emerald-400 transition-colors" title="Agregar categoría al sistema">
                                         <i id="iconAddParent" data-lucide="plus" class="w-3 h-3"></i>
                                     </button>
                                 </div>
                             </div>
-                            
+                           
                             <div id="parentInputContainer" class="hidden flex gap-2">
                                 <input id="newParentLabel" onkeydown="if(event.key==='Enter') addParentCategory()" placeholder="Nueva categoría..." class="flex-1 bg-neutral-900 border border-emerald-500/30 rounded-lg px-3 py-2 text-sm focus:outline-none">
                                 <button onclick="addParentCategory()" class="p-2 bg-emerald-500 text-neutral-950 rounded-lg hover:bg-emerald-400 transition-colors">
                                     <i data-lucide="save" class="w-3.5 h-3.5"></i>
                                 </button>
                             </div>
-                            
-                            <select id="parentRole" onchange="handleParentChange()" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all appearance-none cursor-pointer">
-                                <!-- Opciones inyectadas por JS -->
-                            </select>
+                           
+                            <!-- Se reemplazó el Select por un Input Libre con Datalist -->
+                            <input id="parentRole" list="parentRolesList" oninput="handleParentChange()" placeholder="Seleccionar o escribir un rol..." class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all text-neutral-200">
+                            <datalist id="parentRolesList"></datalist>
                         </div>
 
                         <!-- Child Speciality -->
@@ -136,7 +136,7 @@
                                     <i data-lucide="save" class="w-3.5 h-3.5"></i>
                                 </button>
                             </div>
-                            
+                           
                             <select id="childRole" onchange="handleChildChange()" disabled class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                                 <option value="">Seleccionar padre primero</option>
                             </select>
@@ -162,7 +162,7 @@
 
                 <!-- Section: Text Areas -->
                 <section class="space-y-8">
-                    
+                   
                     <!-- Objective -->
                     <div>
                         <h2 class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
@@ -225,7 +225,7 @@
                                 <i data-lucide="save" class="w-3.5 h-3.5"></i>
                             </button>
                         </div>
-                        
+                       
                         <select id="schemaSelect" onchange="handleSchemaChange()" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all appearance-none cursor-pointer mb-2">
                             <!-- Opciones inyectadas por JS -->
                         </select>
@@ -256,8 +256,9 @@
                     <i data-lucide="copy" class="w-3.5 h-3.5"></i> COPIAR PROMPT
                 </button>
             </div>
+            <!-- Modificado para que sea editable -->
             <div class="flex-1 p-6 overflow-y-auto bg-[#0a0a0a]">
-                <pre id="preview" class="font-mono text-sm text-emerald-400/80 leading-relaxed whitespace-pre-wrap break-all"></pre>
+                <pre id="preview" contenteditable="true" spellcheck="false" class="font-mono text-sm text-emerald-400/80 leading-relaxed whitespace-pre-wrap break-all focus:outline-none"></pre>
             </div>
         </div>
     </main>
@@ -357,8 +358,8 @@
             }
         };
 
-        const INITIAL_SCHEMAS = [
-            "JSON", "Markdown", "HTML", "CSV", "Código Fuente", 
+        const INITIAL_SCHEMAS =[
+            "JSON", "Markdown", "HTML", "CSV", "Código Fuente",
             "Tabla", "Lista de viñetas", "Texto Plano", "Mermaid Diagram", "SQL Query"
         ];
 
@@ -368,7 +369,7 @@
         let childRole = '';
         let techStack = [];
         let schemas = [...INITIAL_SCHEMAS];
-        
+       
         // --- Referencias DOM ---
         const els = {
             parentRole: document.getElementById('parentRole'),
@@ -384,21 +385,21 @@
             outputSchema: document.getElementById('outputSchema'),
             examples: document.getElementById('examples'),
             preview: document.getElementById('preview'),
-            
+           
             // Botones y contenedores
             btnDelParent: document.getElementById('btnDelParent'),
             btnAddChild: document.getElementById('btnAddChild'),
             btnDelChild: document.getElementById('btnDelChild'),
             btnDelSchema: document.getElementById('btnDelSchema'),
-            
+           
             parentInputContainer: document.getElementById('parentInputContainer'),
             childInputContainer: document.getElementById('childInputContainer'),
             schemaInputContainer: document.getElementById('schemaInputContainer'),
-            
+           
             iconAddParent: document.getElementById('iconAddParent'),
             iconAddChild: document.getElementById('iconAddChild'),
             iconAddSchema: document.getElementById('iconAddSchema'),
-            
+           
             newParentLabel: document.getElementById('newParentLabel'),
             newChildLabel: document.getElementById('newChildLabel'),
             newSchemaLabel: document.getElementById('newSchemaLabel')
@@ -414,7 +415,7 @@
         }
 
         function attachListeners() {
-            const textAreas = ['objective', 'techContext', 'constraints', 'inputData', 'chainOfThought', 'outputSchema', 'examples'];
+            const textAreas =['objective', 'techContext', 'constraints', 'inputData', 'chainOfThought', 'outputSchema', 'examples'];
             textAreas.forEach(id => {
                 els[id].addEventListener('input', updateXML);
             });
@@ -422,18 +423,23 @@
 
         // --- Renderizado de UI ---
         function renderParentRoles() {
-            els.parentRole.innerHTML = '<option value="">Seleccionar...</option>';
-            for (const [key, data] of Object.entries(rolesData)) {
-                els.parentRole.innerHTML += `<option value="${key}">${data.label}</option>`;
+            const datalist = document.getElementById('parentRolesList');
+            datalist.innerHTML = '';
+            for (const[key, data] of Object.entries(rolesData)) {
+                datalist.innerHTML += `<option value="${data.label}"></option>`;
             }
-            els.parentRole.value = parentRole;
+            
+            if (parentRole && rolesData[parentRole]) {
+                els.parentRole.value = rolesData[parentRole].label;
+            }
+
             renderChildRoles();
         }
 
         function renderChildRoles() {
             els.childRole.innerHTML = parentRole ? '<option value="">Seleccionar...</option>' : '<option value="">Seleccionar padre primero</option>';
             els.childRole.disabled = !parentRole;
-            
+           
             if (parentRole && rolesData[parentRole]) {
                 for (const [key, child] of Object.entries(rolesData[parentRole].children)) {
                     els.childRole.innerHTML += `<option value="${key}">${child.label}</option>`;
@@ -446,15 +452,15 @@
                 els.btnAddChild.classList.add('opacity-30');
                 els.btnDelParent.classList.add('hidden');
             }
-            
+           
             els.childRole.value = childRole;
-            
+           
             if (childRole) {
                 els.btnDelChild.classList.remove('hidden');
             } else {
                 els.btnDelChild.classList.add('hidden');
             }
-            
+           
             updateXML();
         }
 
@@ -480,7 +486,7 @@
             schemas.forEach(s => {
                 els.schemaSelect.innerHTML += `<option value="${s}">${s}</option>`;
             });
-            
+           
             const currentSchema = els.outputSchema.value;
             if (schemas.includes(currentSchema)) {
                 els.schemaSelect.value = currentSchema;
@@ -493,9 +499,20 @@
 
         // --- Manejadores de Eventos ---
         function handleParentChange() {
-            parentRole = els.parentRole.value;
+            const val = els.parentRole.value;
+            parentRole = '';
+            
+            // Revisa si lo escrito pertenece a alguna opción preestablecida
+            for (const [key, data] of Object.entries(rolesData)) {
+                if (data.label === val) {
+                    parentRole = key;
+                    break;
+                }
+            }
+            
             childRole = '';
             renderChildRoles();
+            updateXML();
         }
 
         function handleChildChange() {
@@ -536,7 +553,7 @@
         }
 
         // --- Lógica de Agregar/Eliminar Dinámico ---
-        
+       
         // Parent
         function toggleAddParent() {
             const isHidden = els.parentInputContainer.classList.contains('hidden');
@@ -570,7 +587,9 @@
             delete rolesData[parentRole];
             parentRole = '';
             childRole = '';
+            els.parentRole.value = ''; // Se limpia el input
             renderParentRoles();
+            updateXML();
         }
 
         // Child
@@ -662,12 +681,15 @@
         function updateXML() {
             let xml = '<prompt_framework>\n\n';
 
-            // System Role Logic
+            // System Role Logic (Aplica tanto si es de lista como texto custom)
             let roleContent = '';
             if (parentRole && rolesData[parentRole]) {
                 const parent = rolesData[parentRole];
                 const rolePrompt = childRole && parent.children[childRole] ? parent.children[childRole].prompt : parent.default;
                 roleContent = `Asume el rol de ${rolePrompt}.`;
+            } else if (els.parentRole.value && els.parentRole.value.trim() !== '') {
+                // Toma lo que el usuario escribió libremente
+                roleContent = `Asume el rol de ${els.parentRole.value.trim()}.`;
             }
             xml += wrapTag('system_role', roleContent);
 
@@ -689,23 +711,36 @@
             xml += wrapTag('examples', els.examples.value);
 
             xml += '</prompt_framework>';
-            
+           
             // Limpiar saltos de línea excesivos
-            els.preview.textContent = xml.replace(/\n{3,}/g, '\n\n').trim();
+            let rawXml = xml.replace(/\n{3,}/g, '\n\n').trim();
+
+            // Escapar entidades para que el HTML no colapse y el contenteditable sea seguro
+            let escapedXml = rawXml
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            
+            // Reemplazar etiquetas XML para darles color Naranja #f97316
+            let styledXml = escapedXml.replace(/(&lt;\/?[\w_]+&gt;)/g, '<span style="color: #f97316;">$1</span>');
+            
+            // Renderizamos inyectando HTML para mantener el formato de color
+            els.preview.innerHTML = styledXml;
         }
 
         // --- Copiar al Portapapeles ---
         async function handleCopy() {
-            const text = els.preview.textContent;
+            // Se usa innerText para respetar los saltos de línea de contenteditable si el usuario hizo ediciones manuales
+            const text = els.preview.innerText;
             try {
                 await navigator.clipboard.writeText(text);
                 const btn = document.getElementById('copyBtn');
-                
+               
                 btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> COPIADO`;
                 btn.classList.remove('bg-emerald-500', 'hover:bg-emerald-600', 'text-neutral-950');
                 btn.classList.add('bg-blue-500', 'hover:bg-blue-600', 'text-white');
                 lucide.createIcons();
-                
+               
                 setTimeout(() => {
                     btn.innerHTML = `<i data-lucide="copy" class="w-3.5 h-3.5"></i> COPIAR PROMPT`;
                     btn.classList.remove('bg-blue-500', 'hover:bg-blue-600', 'text-white');
